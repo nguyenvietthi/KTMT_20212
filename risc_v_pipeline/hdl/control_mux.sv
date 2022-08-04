@@ -1,5 +1,6 @@
 module control_mux(
     input            hazard_i ,
+    
     input      [4:0] RegDst_i ,
     input            ASel_i   ,
     input            BSel_i   ,

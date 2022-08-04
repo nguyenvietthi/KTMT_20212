@@ -1,21 +1,21 @@
 module imm_gen (
-  input     [31:0] inst       ,
-  input     [2:0]  ImmSel     ,
-  output reg[31:0] imm         
+  input      [31:0] inst_i,
+  input      [2:0]  imm_i ,
+  output reg [31:0] imm_o         
 );
   always @(*) begin
-    case (ImmSel)
+    case (imm_i)
       //I-Type
-      3'b000: imm = {{20{inst[31]}},inst[31:20]};
+      3'b000: imm_o = {{20{inst_i[31]}},inst_i[31:20]};
       //S-Type
-      3'b001: imm = {{20{inst[31]}},inst[31:25], inst[11:7]};
+      3'b001: imm_o = {{20{inst_i[31]}},inst_i[31:25], inst_i[11:7]};
       //B-Type
-      3'b010: imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
+      3'b010: imm_o = {{20{inst_i[31]}}, inst_i[7], inst_i[30:25], inst_i[11:8], 1'b0};
       //J-Type
-      3'b011: imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
+      3'b011: imm_o = {{12{inst_i[31]}}, inst_i[19:12], inst_i[20], inst_i[30:21], 1'b0};
       //U-Type
-      3'b100: imm = {inst[31:12],12'b0};
-      default : imm = 32'b0;
+      3'b100: imm_o = {inst_i[31:12],12'b0};
+      default : imm_o = 32'b0;
     endcase
   end
 endmodule
