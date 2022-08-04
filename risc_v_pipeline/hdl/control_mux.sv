@@ -1,5 +1,5 @@
 module control_mux(
-    input            Hazard_i ,
+    input            hazard_i ,
     input      [4:0] RegDst_i ,
     input            ASel_i   ,
     input            BSel_i   ,
@@ -18,7 +18,7 @@ module control_mux(
 );
 
     always @(*) begin
-        if(Hazard_i) begin 
+        if(hazard_i) begin 
             RegDst_o = 'b0;
             ASel_o   = 'b0;
             BSel_o   = 'b0;
