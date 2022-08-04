@@ -1,0 +1,43 @@
+module EX_MEM(
+    input             clk      ,
+    input             rst_n    ,
+
+    input      [31:0] pc_i     ,
+    input      [31:0] ALU_i    ,
+    input      [31:0] data2_i  ,
+    input      [4:0]  RegDst_i ,
+    input             MemRW_i  ,
+    input             RegWEn_i ,
+    input      [1:0]  WBSel_i  ,
+
+    output reg [31:0] pc_o     ,
+    output reg [31:0] ALU_o    ,
+    output reg [31:0] data2_o  ,
+    output reg [4:0]  RegDst_o ,
+    output reg        MemRW_o  ,
+    output reg        RegWEn_o ,
+    output reg [1:0]  WBSel_o  
+);
+
+  always@(posedge clk or negedge rst_n) begin
+    if(~rst_n) begin
+      pc_o     <= 'b0;
+      ALU_o    <= 'b0;
+      data2_o  <= 'b0;
+      RegDst_o <= 'b0;
+      MemRW_o  <= 'b0;
+      RegWEn_o <= 'b0;
+      WBSel_o  <= 'b0;
+    end
+    else begin
+      pc_o     <= pc_i    ;
+      ALU_o    <= ALU_i   ;
+      data2_o  <= data2_i ;
+      RegDst_o <= RegDst_i;
+      MemRW_o  <= MemRW_i ;
+      RegWEn_o <= RegWEn_i;
+      WBSel_o  <= WBSel_i ;
+    end
+  end
+
+endmodule
