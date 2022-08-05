@@ -13,9 +13,21 @@ module register(
 // Register File
 reg [31:0] register [0:31];
 
-// Read Data      
-assign RSdata_o = register[RSaddr_i];
-assign RTdata_o = register[RTaddr_i];
+always @(*) begin
+    if(RSaddr_i == 'b0) begin 
+        RSdata_o = 0;
+    end else begin
+        RSdata_o = register[RSaddr_i];
+    end
+end
+
+always @(*) begin
+    if(RTaddr_i == 'b0) begin 
+        RTdata_o = 0;
+    end else begin
+        RTdata_o = register[RTaddr_i];
+    end
+end
 
 // Write Data
 always@(negedge clk or posedge rst_n)begin
@@ -23,7 +35,7 @@ always@(negedge clk or posedge rst_n)begin
         for(int i = 0; i < 32; i = i + 1) register[i] <= 0;
     end else 
     begin
-        if(RegWrite_i)begin
+        if(RegWrite_i != 'b0)begin
             register[RDaddr_i] <= RDdata_i;
         end
     end      
