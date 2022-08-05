@@ -5,6 +5,7 @@ module branch_comparator(
   output reg          BrEq_o,
   output reg          BrLt_o      
 );
+
     assign BrEq_o = (ex_DataA == ex_DataB) ? 1'b1 : 1'b0;
     
     always @(*) begin

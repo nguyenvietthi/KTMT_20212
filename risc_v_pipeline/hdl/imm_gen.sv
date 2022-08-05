@@ -1,3 +1,4 @@
+`include "risc_v_pipeline_define.svh"
 module imm_gen (
   input      [31:0] inst_i,
   input      [2:0]  imm_i ,
@@ -6,15 +7,15 @@ module imm_gen (
   always @(*) begin
     case (imm_i)
       //I-Type
-      3'b000: imm_o = {{20{inst_i[31]}},inst_i[31:20]};
+      `ImmSelI: imm_o = {{20{inst_i[31]}},inst_i[31:20]};
       //S-Type
-      3'b001: imm_o = {{20{inst_i[31]}},inst_i[31:25], inst_i[11:7]};
+      `ImmSelS: imm_o = {{20{inst_i[31]}},inst_i[31:25], inst_i[11:7]};
       //B-Type
-      3'b010: imm_o = {{20{inst_i[31]}}, inst_i[7], inst_i[30:25], inst_i[11:8], 1'b0};
+      `ImmSelB: imm_o = {{20{inst_i[31]}}, inst_i[7], inst_i[30:25], inst_i[11:8], 1'b0};
       //J-Type
-      3'b011: imm_o = {{12{inst_i[31]}}, inst_i[19:12], inst_i[20], inst_i[30:21], 1'b0};
+      `ImmSelJ: imm_o = {{12{inst_i[31]}}, inst_i[19:12], inst_i[20], inst_i[30:21], 1'b0};
       //U-Type
-      3'b100: imm_o = {inst_i[31:12],12'b0};
+      `ImmSelU: imm_o = {inst_i[31:12],12'b0};
       default : imm_o = 32'b0;
     endcase
   end

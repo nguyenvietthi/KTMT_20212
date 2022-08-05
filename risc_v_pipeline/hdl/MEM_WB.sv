@@ -9,8 +9,6 @@ module EX_MEM(
     output reg [4:0]  RegDst_o ,
     output reg        RegWEn_o ,
     output reg [31:0] data_wb_o,
-
- 
 );
 
     always@(posedge clk or negedge rst_n) begin
