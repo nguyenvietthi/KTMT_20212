@@ -16,6 +16,7 @@ module imm_gen (
       `ImmSelJ: imm_o = {{12{inst_i[31]}}, inst_i[19:12], inst_i[20], inst_i[30:21], 1'b0};
       //U-Type
       `ImmSelU: imm_o = {inst_i[31:12],12'b0};
+      
       default : imm_o = 32'b0;
     endcase
   end

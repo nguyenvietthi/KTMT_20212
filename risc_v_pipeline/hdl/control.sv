@@ -38,7 +38,7 @@ module control (
     end
   end
 
-  assign insert_nop = detect_jal || (count == 1'b1);
+  assign insert_nop_flag = detect_jal || (count == 1'b1);
 
   always @(posedge clk or negedge rst_n) begin
     if(~rst_n) begin
@@ -306,7 +306,18 @@ module control (
               WBSel_o               = 2'b01; // ALU
           end
 
-      default: ALUSel_o             = `ALUnop;
+      default: 
+        begin
+              PCSel                 = 0; //PC+4
+              ImmSel_o              = 4'b1111;
+              BrUn_o                = 0;
+              ASel_o                = 0; //PC
+              BSel_o                = 1; //Imm
+              ALUSel_o              = `ALUnop;
+              MemRW_o               = 0; //Read
+              RegWEn_o              = 0;
+              WBSel_o               = 2'b01; // ALU
+        end
       endcase
   end
 endmodule
