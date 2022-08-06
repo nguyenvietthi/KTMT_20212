@@ -8,7 +8,7 @@ module instruction_memory(
   initial begin
       $readmemh("D:/OneDrive - Hanoi University of Science and Technology/NAM 4/20212/KTMT/KTMT_20212/risc_v_pipeline/sim/tb/inst_test.txt", inst_memory);
       
-      $display("Instruction Memory: ");
+      $display("\nInstruction Memory: ");
       for(int i = 0; i < 50; i++) begin 
         $display("[%d]: 'h%h", i, inst_memory[i]);
       end

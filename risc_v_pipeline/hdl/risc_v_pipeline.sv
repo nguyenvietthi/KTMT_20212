@@ -63,17 +63,17 @@ module risc_v_pipeline (
   wire [1:0]  ID_EX_WBSel  ;
   wire [3:0]  ID_EX_ALUSel ;
 
-  wire [31:0] alu_result       ;
-  wire [31:0] data_wb          ;
-  wire [31:0] EX_MEM_pc        ;   
-  wire [31:0] EX_MEM_pc_add    ;
-  wire [31:0] EX_MEM_ALU_result;    
-  wire [31:0] EX_MEM_data2     ;  
-  wire [4:0]  EX_MEM_rd        ; 
-  wire        EX_MEM_MemR      ;  
-  wire        EX_MEM_MemW      ;  
-  wire        EX_MEM_RegWEn    ; 
-  wire [1:0]  EX_MEM_WBSel     ; 
+  wire [31:0] alu_result           ;
+  wire [31:0] data_wb              ;
+  wire [31:0] EX_MEM_pc            ;   
+  wire [31:0] EX_MEM_pc_add        ;
+  wire [31:0] EX_MEM_ALU_result    ;    
+  wire [31:0] EX_MEM_forward_b_data;  
+  wire [4:0]  EX_MEM_rd            ; 
+  wire        EX_MEM_MemR          ;  
+  wire        EX_MEM_MemW          ;  
+  wire        EX_MEM_RegWEn        ; 
+  wire [1:0]  EX_MEM_WBSel         ; 
 
 
   wire [1:0]  forward_a        ;       
@@ -320,39 +320,39 @@ module risc_v_pipeline (
   //EX/MEM
 
   EX_MEM EX_MEM_ins(
-    .clk      (clk              ),
-    .rst_n    (rst_n            ),
-    .pc_i     (ID_EX_pc         ),
-    .ALU_i    (alu_result       ),
-    .data2_i  (ID_EX_data2      ),
-    .RegDst_i (ID_EX_rd         ),
-    .MemR_i   (ID_EX_MemR       ),
-    .MemW_i   (ID_EX_MemW       ),
-    .RegWEn_i (ID_EX_RegWEn     ),
-    .WBSel_i  (ID_EX_WBSel      ),
+    .clk               (clk                  ),
+    .rst_n             (rst_n                ),
+    .pc_i              (ID_EX_pc             ),
+    .ALU_i             (alu_result           ),
+    .forward_b_data_i  (forward_b_data       ),
+    .RegDst_i          (ID_EX_rd             ),
+    .MemR_i            (ID_EX_MemR           ),
+    .MemW_i            (ID_EX_MemW           ),
+    .RegWEn_i          (ID_EX_RegWEn         ),
+    .WBSel_i           (ID_EX_WBSel          ),
 
-    .pc_o     (EX_MEM_pc        ),
-    .ALU_o    (EX_MEM_ALU_result),
-    .data2_o  (EX_MEM_data2     ),
-    .RegDst_o (EX_MEM_rd        ),
-    .MemR_o   (EX_MEM_MemR      ),
-    .MemW_o   (EX_MEM_MemW      ),
-    .RegWEn_o (EX_MEM_RegWEn    ),
-    .WBSel_o  (EX_MEM_WBSel     )
+    .pc_o              (EX_MEM_pc            ),
+    .ALU_o             (EX_MEM_ALU_result    ),
+    .forward_b_data_o  (EX_MEM_forward_b_data),
+    .RegDst_o          (EX_MEM_rd            ),
+    .MemR_o            (EX_MEM_MemR          ),
+    .MemW_o            (EX_MEM_MemW          ),
+    .RegWEn_o          (EX_MEM_RegWEn        ),
+    .WBSel_o           (EX_MEM_WBSel         )
   );
 
   // EX
   data_memory data_memory_ins(
-    .clk         (clk              ),
-    .rst_n       (rst_n            ),
-    .op_addr     (                 ),
-    .addr_i      (EX_MEM_ALU_result),
-    .data_i      (EX_MEM_data2     ),
-    .mem_write_i (EX_MEM_MemW      ),
-    .mem_read_i  (EX_MEM_MemR      ),
+    .clk         (clk                  ),
+    .rst_n       (rst_n                ),
+    .op_addr     (                     ),
+    .addr_i      (EX_MEM_ALU_result    ),
+    .data_i      (EX_MEM_forward_b_data),
+    .mem_write_i (EX_MEM_MemW          ),
+    .mem_read_i  (EX_MEM_MemR          ),
 
-    .data_o      (mem_data_out     ),
-    .data_mem_o  (                 )
+    .data_o      (mem_data_out         ),
+    .data_mem_o  (                     )
   );
 
   adder EX_MEM_pc_adder_ins (

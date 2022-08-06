@@ -41,12 +41,15 @@ always@(negedge clk or posedge rst_n)begin
     end      
 end
    
-
 always_comb begin
-    $display("\n%t ns: REGISTER", $realtime());
-  for(int i = 0; i < 31; i++) begin 
-    $display("[%d]: %d", i, register[i]);
+    $display("\n@ %1d ns => REGISTER", $realtime());
+  for(int i = 0; i < 32; i++) begin
+    if(register[i] !== 'bx)begin 
+        $display("  [%2d]: %1d", i, register[i]);
+    end else begin 
+        break;   
+    end 
   end
-
 end
+
 endmodule 

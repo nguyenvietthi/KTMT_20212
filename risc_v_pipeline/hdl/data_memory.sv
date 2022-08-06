@@ -10,7 +10,7 @@ module data_memory (
   output  [31:0]      data_mem_o 
 );
 
-  reg [7:0] memory [0:31];
+  reg [7:0] memory [0:119];
   wire [31:0] op;
   
   assign op = { memory[addr_i + 3],memory[addr_i + 2], memory[addr_i + 1], memory[addr_i]};
@@ -21,7 +21,7 @@ module data_memory (
   
   always @(posedge clk or posedge rst_n) begin
       if(~rst_n) begin 
-        for(int i=0; i < 32; i = i + 1) memory[i] <= 0;
+        for(int i=0; i < 120; i = i + 1) memory[i] <= 0;
       end else 
       if(mem_write_i) begin
         memory[addr_i + 3] <= data_i[31:24];
@@ -30,4 +30,18 @@ module data_memory (
         memory[addr_i    ] <= data_i[7:0];
       end
   end
+
+always_comb begin
+    $display("\n@ %1d ns => DATA MEMORY", $realtime());
+  for(int i = 0; i < 30; i++) begin
+    if(memory[i] !== 'bx)begin 
+        $display("  [%3d] = 'h%2h, [%3d] = 'h%2h, [%3d] = 'h%2h, [%3d] = 'h%2h => data = %1d",
+         i*4 + 3, memory[i*4 + 3], i*4 + 2, memory[i*4 + 2], i*4 + 1, memory[i*4 + 1], i*4, memory[i*4],
+          {memory[i*4 + 3], memory[i*4 + 2], memory[i*4 + 1], memory[i*4]});
+    end else begin 
+        break;   
+    end 
+  end
+end
+
 endmodule
