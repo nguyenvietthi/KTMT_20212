@@ -5,7 +5,7 @@ module imm_gen (
   output reg [31:0] imm_o           
 );
   always @(*) begin
-    case (imm_i)
+    case (imm_sel_i)
       //I-Type
       `ImmSelI: imm_o = {{20{inst_i[31]}},inst_i[31:20]};
       //S-Type

@@ -1,10 +1,10 @@
 module forwarding_unit(   
-    input      [4:0] EX_MEM_RegWrite_i,
+    input            EX_MEM_RegWrite_i,
     input      [4:0] EX_MEM_RD_i      ,
     input      [4:0] ID_EX_RS_i       ,
     input      [4:0] ID_EX_RT_i       ,
     input            MEM_WB_RegWrite_i,
-    input            MEM_WB_RD_i      ,
+    input      [4:0] MEM_WB_RD_i      ,
     output reg [1:0] ForwardA_o       ,
     output reg [1:0] ForwardB_o        
 );

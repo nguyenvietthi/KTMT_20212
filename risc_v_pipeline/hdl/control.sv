@@ -172,14 +172,14 @@ module control (
       `IMM_I:
         begin
             PCSel_o               = 0; //PC=PC+4
-            ImmSel              = ImmSelI; //Immediate type I
+            ImmSel_o              = `ImmSelI; //Immediate type I
             // BrUn                = 1'bx;
-            ASel                = 0; //Reg
-            BSel                = 1; //Imm
-            ALUSel              = ALUadd;
-            MemRW               = 0; //Read
-            RegWEn              = 1;
-            WBSel               = 2'b01; //ALU
+            ASel_o                = 0; //Reg
+            BSel_o                = 1; //Imm
+            ALUSel_o              = `ALUadd;
+            MemRW_o               = 0; //Read
+            RegWEn_o              = 1;
+            WBSel_o               = 2'b01; //ALU
         end
       `LOAD_I:
           begin

@@ -1,0 +1,26 @@
+#!/bin/bash
+reset
+# UVMLIB=../uvm_code/uvm-1.1d #path lib of UVM
+TOP_TB=risc_v_pipeline_tb # name top testbench
+# prepare workspace
+alias vlb='rm -rf work; mkdir -p log; vlib work'
+
+alias vlgr='vlog -f ../script/filelist_rtl.f  +cover=bcefs -l ./log/vlogr.log'
+alias vlgt='vlog -f ../script/filelist_tb.f -l ./log/vlogt.log'
+
+# compile rtl and testbench
+alias vlg='vlgr; vlgt'
+
+# run simulation with UVM lib
+# alias vsm='vsim -c ${TOP_TB} -wlf vsim.wlf -solvefaildebug -assertdebug -assertcover -sva -coverage -voptargs=+acc -l vsim.log +UVM_VERBOSITY=UVM_MEDIUM -sv_lib $UVMLIB/lib/uvm_dpi64 -do "coverage save -onexit -assert -code bcefs -directive -cvg coverage.ucdb; add wave -r /${TOP_TB}/*; run -all; quit"'
+
+# run simulation without UVM lib
+alias vsm='vsim -c ${TOP_TB} -wlf vsim.wlf -solvefaildebug -assertdebug -voptargs=+acc -l vsim.log -do "add wave -r /${TOP_TB}/*; run -all; quit"'
+
+# view wave form
+#alias viw='vsim -view vsim.wlf -do wave.do &'
+
+#gen report
+alias rep='vcover report -stmtaltflow -html -htmldir report/ coverage.ucdb'
+
+vlb;vlg;vsm

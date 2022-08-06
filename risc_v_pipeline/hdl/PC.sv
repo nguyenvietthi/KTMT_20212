@@ -6,7 +6,7 @@ module PC(
     output reg  [31:0]  pc_o      
 );
   
-    always@(posedge clk_i or negedge rst_n) begin
+    always@(posedge clk or negedge rst_n) begin
         if(~rst_n) begin
             pc_o <= 32'b0;
         end

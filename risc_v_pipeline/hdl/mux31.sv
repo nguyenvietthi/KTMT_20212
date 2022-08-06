@@ -1,9 +1,9 @@
 module mux31(
-    input          select_i,
-    input  [31:0]  data1_i ,
-    input  [31:0]  data2_i ,
-    input  [31:0]  data3_i ,
-    output [31:0]  data_o    
+    input      [1:0]   select_i,
+    input      [31:0]  data1_i ,
+    input      [31:0]  data2_i ,
+    input      [31:0]  data3_i ,
+    output reg [31:0]  data_o    
 );
 
     always @(*) begin

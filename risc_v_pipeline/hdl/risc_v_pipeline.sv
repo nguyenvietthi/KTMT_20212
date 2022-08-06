@@ -4,7 +4,7 @@ module risc_v_pipeline (
 );
   
   wire        hazard   ;
-  wire        next_pc  ;
+  wire [31:0] next_pc  ;
   wire [31:0] pc       ;
   wire [31:0] pc_add   ;
   wire [31:0] pc_jump  ;
@@ -15,29 +15,30 @@ module risc_v_pipeline (
   wire [31:0] pc_jump_result;
   reg  [31:0] delay_pc_jump_result;
 
-  wire       br_eq          ;           
-  wire       br_lt          ;           
-  wire [6:0] opcode         ;         
-  wire [6:0] funct7         ;         
-  wire [2:0] funct3         ;         
-  wire [2:0] imm_sel        ;
-  wire       pc_sel         ;                 
-  wire       br_un          ;           
-  wire       ASel           ;           
-  wire       BSel           ;           
-  wire       MemRW          ;          
-  wire       RegWEn         ;         
-  wire [1:0] WBSel          ;          
-  wire [3:0] ALUSel         ;         
-  wire       insert_nop_flag;
+  wire        br_eq          ;           
+  wire        br_lt          ;           
+  wire [6:0]  opcode         ;         
+  wire [6:0]  funct7         ;         
+  wire [2:0]  funct3         ;         
+  wire [2:0]  imm_sel        ;
+  wire        pc_sel         ;                 
+  wire        br_un          ;           
+  wire        ASel           ;           
+  wire        BSel           ;           
+  wire        MemRW          ;          
+  wire        RegWEn         ;         
+  wire [1:0]  WBSel          ;          
+  wire [3:0]  ALUSel         ;         
+  wire        insert_nop_flag;
+  wire [31:0] data1          ;
+  wire [31:0] data2          ;
  
-
   wire [31:0]  IF_ID_pc     ;  
   wire [31:0]  IF_ID_inst   ;
-  wire [31:0]  IF_ID_rd     ;
-  wire [31:0]  IF_ID_rd_next;
-  wire [31:0]  IF_ID_rs1    ;
-  wire [31:0]  IF_ID_rs2    ;
+  wire [4:0]   IF_ID_rd     ;
+  wire [4:0]   IF_ID_rd_next;
+  wire [4:0]   IF_ID_rs1    ;
+  wire [4:0]   IF_ID_rs2    ;
   wire         IF_ID_ASel   ;   
   wire         IF_ID_BSel   ;   
   wire         IF_ID_MemRW  ;  
@@ -48,8 +49,8 @@ module risc_v_pipeline (
   wire [31:0] ID_EX_pc     ;
   wire [31:0] ID_EX_imm    ;
   wire [4:0]  ID_EX_rd     ;
-  wire [4:0]  ID_EX_r1     ;
-  wire [4:0]  ID_EX_r2     ;
+  wire [4:0]  ID_EX_rs1    ;
+  wire [4:0]  ID_EX_rs2    ;
   wire [31:0] ID_EX_data1  ;
   wire [31:0] ID_EX_data2  ;
   wire        ID_EX_ASel   ;
@@ -238,8 +239,8 @@ module risc_v_pipeline (
     .pc_i     (IF_ID_pc    ), 
     .imm_i    (imm_o       ), 
     .RegDst_i (IF_ID_rd    ), 
-    .RegS1_i  (IF_ID_r1    ), 
-    .RegS2_i  (IF_ID_r2    ), 
+    .RegS1_i  (IF_ID_rs1   ), 
+    .RegS2_i  (IF_ID_rs2   ), 
     .data1_i  (data1       ), 
     .data2_i  (data2       ), 
     .ASel_i   (IF_ID_ASel  ), 
@@ -251,8 +252,8 @@ module risc_v_pipeline (
     .pc_o     (ID_EX_pc    ), 
     .imm_o    (ID_EX_imm   ), 
     .RegDst_o (ID_EX_rd    ), 
-    .RegS1_o  (ID_EX_r1    ), 
-    .RegS2_o  (ID_EX_r2    ), 
+    .RegS1_o  (ID_EX_rs1   ), 
+    .RegS2_o  (ID_EX_rs2   ), 
     .data1_o  (ID_EX_data1 ), 
     .data2_o  (ID_EX_data2 ), 
     .ASel_o   (ID_EX_ASel  ), 
@@ -260,7 +261,7 @@ module risc_v_pipeline (
     .MemRW_o  (ID_EX_MemRW ), 
     .RegWEn_o (ID_EX_RegWEn), 
     .WBSel_o  (ID_EX_WBSel ), 
-    .ALUSel_o (ID_EX_ALUSel), 
+    .ALUSel_o (ID_EX_ALUSel)
   );
 
   //EX
@@ -302,9 +303,9 @@ module risc_v_pipeline (
   ALU ALU_ins(
     .src1      (forward_a_data),
     .src2      (alu_src_2     ),
-    .ALU_sel   (ALU_sel       ),
+    .ALU_sel   (ID_EX_ALUSel  ),
     .alu_result(alu_result    ),
-    .zero_flag (              ),
+    .zero_flag (              )
   );
 
   //EX/MEM
@@ -358,7 +359,7 @@ module risc_v_pipeline (
   ); 
 
   // EX_MEM
-  EX_MEM EX_MEM_ins(
+  MEM_WB MEM_WB_ins(
     .clk       (clk           ),
     .rst_n     (rst_n         ),
     .RegDst_i  (EX_MEM_rd     ),
