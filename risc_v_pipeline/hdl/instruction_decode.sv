@@ -1,7 +1,5 @@
 `include "risc_v_pipeline_define.svh"
 module instruction_decode (
-  input         clk     ,
-  input         rst_n   ,
   input  [32:0] inst_i  ,
   output [4:0]  rd_o    ,
   output [4:0]  rs1_o   ,

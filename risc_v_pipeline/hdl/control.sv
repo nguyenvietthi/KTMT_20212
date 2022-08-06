@@ -1,30 +1,26 @@
 `include "risc_v_pipeline_define.svh"
 module control (
-    input            clk            ,
-    input            rst_n          ,
-    input            BrEq_i         ,
-    input            BrLT_i         ,
-    input      [6:0] opcode_i       ,
-    input      [6:0] funct7_i       ,
-    input      [2:0] funct3_i       ,
-    output reg [2:0] ImmSel_o       ,
-    output reg       PCSel_o        ,
-    output reg       BrUn_o         ,
-    output reg       ASel_o         ,
-    output reg       BSel_o         ,
-    output reg       MemRW_o        ,
-    output reg       RegWEn_o       ,
-    output reg [1:0] WBSel_o        ,
-    output reg [3:0] ALUSel_o       ,
-    output           insert_nop_flag
+    input            clk              ,
+    input            rst_n            ,
+    input            BrEq_i           ,
+    input            BrLT_i           ,
+    input      [6:0] opcode_i         ,
+    input      [6:0] funct7_i         ,
+    input      [2:0] funct3_i         ,
+    output reg [2:0] ImmSel_o         ,
+    output reg       PCSel_o          ,
+    output reg       BrUn_o           ,
+    output reg       ASel_o           ,
+    output reg       BSel_o           ,
+    output reg       MemRW_o          ,
+    output reg       RegWEn_o         ,
+    output reg [1:0] WBSel_o          ,
+    output reg [3:0] ALUSel_o         ,
+    output           insert_nop_flag_o
 );
-  reg PCSel;
-
   //insert 2 nop for JAL
   reg  count          ;
   wire detect_jal     ;
-  wire pc_sel_jal     ;
-  reg  pc_sel_jal_reg ;
 
   assign detect_jal = (opcode_i == `J);
 
@@ -38,17 +34,7 @@ module control (
     end
   end
 
-  assign insert_nop_flag = detect_jal || (count == 1'b1);
-
-  always @(posedge clk or negedge rst_n) begin
-    if(~rst_n) begin
-      pc_sel_jal_reg <= 0;
-    end else begin
-      pc_sel_jal_reg <= pc_sel_jal;
-    end
-  end
-
-  assign PCSel_o = (count == 1) ? pc_sel_jal_reg : PCSel;
+  assign insert_nop_flag_o = detect_jal || (count == 1'b1);
 
   // Control logic
   always @(*)
@@ -60,7 +46,7 @@ module control (
               case(funct7_i)
               7'b0000000: //add
                   begin
-                      PCSel       = 0; //PC=PC+4
+                      PCSel_o       = 0; //PC=PC+4
                       ImmSel_o      = `ImmSelR;
                       //BrUn_o        = 1'b0;
                       ASel_o        = 0; //Reg
@@ -72,7 +58,7 @@ module control (
                   end
               7'b0100000: //sub
                   begin
-                      PCSel       = 0; //PC=PC+4
+                      PCSel_o       = 0; //PC=PC+4
                       ImmSel_o      = `ImmSelR;
                       //BrUn_o        = 1'b0;
                       ASel_o        = 0; //Reg
@@ -85,7 +71,7 @@ module control (
               endcase
           3'b001: //sll
               begin
-                  PCSel           = 0; //PC=PC+4
+                  PCSel_o           = 0; //PC=PC+4
                   ImmSel_o          = `ImmSelR;
                   // BrUn_o            = 1'bx;
                   ASel_o            = 0; //Reg
@@ -97,7 +83,7 @@ module control (
               end
           3'b010: //slt
               begin
-                  PCSel           = 0; //PC=PC+4
+                  PCSel_o           = 0; //PC=PC+4
                   ImmSel_o          = `ImmSelR;
                   // BrUn_o            = 1'bx;
                   ASel_o            = 0; //Reg
@@ -109,7 +95,7 @@ module control (
               end
           3'b011: //sltu
               begin
-                  PCSel           = 0; //PC=PC+4
+                  PCSel_o           = 0; //PC=PC+4
                   ImmSel_o          = `ImmSelR;
                   // BrUn_o            = 1'bx;
                   ASel_o            = 0; //Reg
@@ -121,7 +107,7 @@ module control (
               end
           3'b100: //xor
               begin
-                  PCSel           = 0; //PC=PC+4
+                  PCSel_o           = 0; //PC=PC+4
                   ImmSel_o          = `ImmSelR;
                   // BrUn_o            = 1'bx;
                   ASel_o            = 0; //Reg
@@ -135,7 +121,7 @@ module control (
               case(funct7_i)
               7'b0000000: //srl
                   begin
-                      PCSel       = 0; //PC=PC+4
+                      PCSel_o       = 0; //PC=PC+4
                       ImmSel_o      = `ImmSelR;
                       // BrUn_o        = 1'bx;
                       ASel_o        = 0; //Reg
@@ -147,7 +133,7 @@ module control (
                   end
               7'b0100000: //sra
                   begin
-                      PCSel       = 0; //PC=PC+4
+                      PCSel_o       = 0; //PC=PC+4
                       ImmSel_o      = `ImmSelR;
                       // BrUn_o        = 1'bx;
                       ASel_o        = 0; //Reg
@@ -160,7 +146,7 @@ module control (
               endcase
           3'b110: //or
               begin
-                  PCSel           = 0; //PC=PC+4
+                  PCSel_o           = 0; //PC=PC+4
                   ImmSel_o          = `ImmSelR;
                   // BrUn_o            = 1'bx;
                   ASel_o            = 0; //Reg
@@ -172,7 +158,7 @@ module control (
               end
           3'b111: //and
               begin
-                  PCSel           = 0; //PC=PC+4
+                  PCSel_o           = 0; //PC=PC+4
                   ImmSel_o          = `ImmSelR;
                   // BrUn_o            = 1'bx;
                   ASel_o            = 0; //Reg
@@ -185,7 +171,7 @@ module control (
           endcase
       `IMM_I:
         begin
-            PCSel               = 0; //PC=PC+4
+            PCSel_o               = 0; //PC=PC+4
             ImmSel              = ImmSelI; //Immediate type I
             // BrUn                = 1'bx;
             ASel                = 0; //Reg
@@ -197,7 +183,7 @@ module control (
         end
       `LOAD_I:
           begin
-              PCSel               = 0; //PC=PC+4
+              PCSel_o               = 0; //PC=PC+4
               ImmSel_o              = `ImmSelI; //Immediate type I
               BrUn_o                = 1'bx;
               ASel_o                = 0; //Reg
@@ -209,7 +195,7 @@ module control (
               end
       `S:
           begin
-              PCSel               = 0; //PC=PC+4
+              PCSel_o               = 0; //PC=PC+4
               ImmSel_o              = `ImmSelS; //Immediate type S
               BrUn_o                = 1'bx;
               ASel_o                = 0; //Reg
@@ -221,9 +207,9 @@ module control (
               end
       `B:
           case(funct3_i)
-          3'b000: //beq // Branchcomp block read BrEq_i and change PCSel
+          3'b000: //beq // Branchcomp block read BrEq_i and change PCSel_o
               begin
-                  PCSel           = (BrEq_i) ? 1 : 0; //PC=PC+Imm when Eq, PC= PC+4 when not Eq
+                  PCSel_o           = (BrEq_i) ? 1 : 0; //PC=PC+Imm when Eq, PC= PC+4 when not Eq
                   ImmSel_o          = `ImmSelB; //Immediate type `B
                   // BrUn_o            = 1'bx;
                   ASel_o            = 1; //PC
@@ -233,9 +219,9 @@ module control (
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
-          3'b001: //bne //Branchcomp read BrEq_i and change PCSel
+          3'b001: //bne //Branchcomp read BrEq_i and change PCSel_o
               begin
-                  PCSel           = (BrLT_i) ? 0 : 1; //ALU // temporary value
+                  PCSel_o           = (BrLT_i) ? 0 : 1; //ALU // temporary value
                   ImmSel_o          = `ImmSelB; //Immediate type `B
                   // BrUn_o            = 1'bx;
                   ASel_o            = 1; //PC
@@ -245,9 +231,9 @@ module control (
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
-          3'b100: //blt //Branchcomp read BrLT_i and change PCSel
+          3'b100: //blt //Branchcomp read BrLT_i and change PCSel_o
               begin
-                  PCSel           = (BrLT_i) ? 1 : 0; //PC+4 // temporary value
+                  PCSel_o           = (BrLT_i) ? 1 : 0; //PC+4 // temporary value
                   ImmSel_o          = `ImmSelB; //Immediate type `B
                   BrUn_o            = 0;
                   ASel_o            = 1; //PC
@@ -257,9 +243,9 @@ module control (
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
-          3'b101: //bltu //Branchcomp read BrLT_i and change PCSel
+          3'b101: //bltu //Branchcomp read BrLT_i and change PCSel_o
               begin
-                  PCSel           = (BrLT_i) ? 1 : 0; //PC+4 // temporary value
+                  PCSel_o           = (BrLT_i) ? 1 : 0; //PC+4 // temporary value
                   ImmSel_o          = `ImmSelB; //Immediate type `B
                   BrUn_o            = 1;
                   ASel_o            = 1; //PC
@@ -272,7 +258,7 @@ module control (
           endcase
       `JUMP_I:
           begin
-              PCSel               = 2; //jump_pc
+              PCSel_o               = 2; //jump_pc
               ImmSel_o              = `ImmSelI; //Immediate type I
               // BrUn_o                = 1'bx;
               ASel_o                = 0; //Reg
@@ -284,7 +270,7 @@ module control (
           end
       `J:
           begin
-              pc_sel_jal            = 1; //jump_pc
+              PCSel_o            = 1; //jump_pc
               ImmSel_o              = `ImmSelJ; //Immediate type J
               ASel_o                = 1; //PC
               BSel_o                = 1; //Imm
@@ -295,7 +281,7 @@ module control (
           end
       `U:
           begin
-              PCSel               = 0; //PC+4
+              PCSel_o               = 0; //PC+4
               ImmSel_o              = `ImmSelU; //Immediate type U
               BrUn_o                = 1'bx;
               ASel_o                = 1; //PC
@@ -308,7 +294,7 @@ module control (
 
       default: 
         begin
-              PCSel                 = 0; //PC+4
+              PCSel_o                 = 0; //PC+4
               ImmSel_o              = 4'b1111;
               BrUn_o                = 0;
               ASel_o                = 0; //PC

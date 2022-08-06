@@ -1,8 +1,8 @@
 `include "risc_v_pipeline_define.svh"
 module imm_gen (
-  input      [31:0] inst_i,
-  input      [2:0]  imm_i ,
-  output reg [31:0] imm_o         
+  input      [31:0] inst_i   ,
+  input      [2:0]  imm_sel_i,
+  output reg [31:0] imm_o           
 );
   always @(*) begin
     case (imm_i)
