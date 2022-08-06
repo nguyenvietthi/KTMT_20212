@@ -20,7 +20,7 @@ module data_memory (
   assign data_o = (mem_read_i) ? op : 32'b0;
   
   always @(posedge clk or posedge rst_n) begin
-      if(rst_n) begin 
+      if(~rst_n) begin 
         for(int i=0; i < 32; i = i + 1) memory[i] <= 0;
       end else 
       if(mem_write_i) begin

@@ -31,7 +31,7 @@ end
 
 // Write Data
 always@(negedge clk or posedge rst_n)begin
-    if(rst_n) begin
+    if(~rst_n) begin
         for(int i = 0; i < 32; i = i + 1) register[i] <= 0;
     end else 
     begin
@@ -41,4 +41,12 @@ always@(negedge clk or posedge rst_n)begin
     end      
 end
    
+
+always_comb begin
+    $display("\n%t ns: REGISTER", $realtime());
+  for(int i = 0; i < 31; i++) begin 
+    $display("[%d]: %d", i, register[i]);
+  end
+
+end
 endmodule 

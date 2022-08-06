@@ -12,7 +12,8 @@ module control (
     output reg       BrUn_o           ,
     output reg       ASel_o           ,
     output reg       BSel_o           ,
-    output reg       MemRW_o          ,
+    output reg       MemR_o           ,
+    output reg       MemW_o           ,
     output reg       RegWEn_o         ,
     output reg [1:0] WBSel_o          ,
     output reg [3:0] ALUSel_o         ,
@@ -52,7 +53,8 @@ module control (
                       ASel_o        = 0; //Reg
                       BSel_o        = 0; //Reg
                       ALUSel_o      = `ALUadd;
-                      MemRW_o       = 0; //Read
+                      MemR_o        = 0;
+                      MemW_o        = 0;
                       RegWEn_o      = 1;
                       WBSel_o       = 2'b01; //ALU
                   end
@@ -64,7 +66,8 @@ module control (
                       ASel_o        = 0; //Reg
                       BSel_o        = 0; //Reg
                       ALUSel_o      = `ALUsub;
-                      MemRW_o       = 0; //Read
+                      MemR_o        = 0;
+                      MemW_o        = 0;
                       RegWEn_o      = 1;
                       WBSel_o       = 2'b01; //ALU
                   end
@@ -77,7 +80,8 @@ module control (
                   ASel_o            = 0; //Reg
                   BSel_o            = 0; //Reg
                   ALUSel_o          = `ALUsll;
-                  MemRW_o           = 0;//Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 1;
                   WBSel_o           = 2'b01; //ALU
               end
@@ -89,7 +93,8 @@ module control (
                   ASel_o            = 0; //Reg
                   BSel_o            = 0; //Reg
                   ALUSel_o          = `ALUslt;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 1;
                   WBSel_o           = 2'b01; //ALU
               end
@@ -101,7 +106,8 @@ module control (
                   ASel_o            = 0; //Reg
                   BSel_o            = 0; //Reg
                   ALUSel_o          = `ALUsltu;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 1;
                   WBSel_o           = 2'b01; //ALU
               end
@@ -113,7 +119,8 @@ module control (
                   ASel_o            = 0; //Reg
                   BSel_o            = 0; //Reg
                   ALUSel_o          = `ALUxor;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 1;
                   WBSel_o           = 2'b01; //ALU
               end
@@ -127,7 +134,8 @@ module control (
                       ASel_o        = 0; //Reg
                       BSel_o        = 0; //Reg
                       ALUSel_o      = `ALUsrl;
-                      MemRW_o       = 0; //Read
+                      MemR_o        = 0;
+                      MemW_o        = 0;
                       RegWEn_o      = 1;
                       WBSel_o       = 2'b01; //ALU
                   end
@@ -139,7 +147,8 @@ module control (
                       ASel_o        = 0; //Reg
                       BSel_o        = 0; //Reg
                       ALUSel_o      = `ALUsra;
-                      MemRW_o       = 0; //Read
+                      MemR_o        = 0;
+                      MemW_o        = 0;
                       RegWEn_o      = 1;
                       WBSel_o       = 2'b01; //ALU
                   end
@@ -152,7 +161,8 @@ module control (
                   ASel_o            = 0; //Reg
                   BSel_o            = 0; //Reg
                   ALUSel_o          = `ALUor;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 1;
                   WBSel_o           = 2'b01; //ALU
               end
@@ -164,7 +174,8 @@ module control (
                   ASel_o            = 0; //Reg
                   BSel_o            = 0; //Reg
                   ALUSel_o          = `ALUand;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 1;
                   WBSel_o           = 2'b01; //ALU
               end
@@ -177,7 +188,8 @@ module control (
             ASel_o                = 0; //Reg
             BSel_o                = 1; //Imm
             ALUSel_o              = `ALUadd;
-            MemRW_o               = 0; //Read
+            MemR_o            = 0;
+            MemW_o            = 0;
             RegWEn_o              = 1;
             WBSel_o               = 2'b01; //ALU
         end
@@ -189,7 +201,8 @@ module control (
               ASel_o                = 0; //Reg
               BSel_o                = 1; //Imm
               ALUSel_o              = `ALUadd;
-              MemRW_o               = 0; //Read
+              MemR_o                = 1;
+              MemW_o                = 0;
               RegWEn_o              = 1;
               WBSel_o               = 2'b00; //Mem
               end
@@ -201,7 +214,8 @@ module control (
               ASel_o                = 0; //Reg
               BSel_o                = 1; //Imm
               ALUSel_o              = `ALUadd;
-              MemRW_o               = 1; //Write
+              MemR_o                = 0;
+              MemW_o                = 1;
               RegWEn_o              = 0;
               WBSel_o               = 2'bxx;
               end
@@ -215,7 +229,8 @@ module control (
                   ASel_o            = 1; //PC
                   BSel_o            = 1; //Imm
                   ALUSel_o          = `ALUadd;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
@@ -227,7 +242,8 @@ module control (
                   ASel_o            = 1; //PC
                   BSel_o            = 1; //Imm
                   ALUSel_o          = `ALUadd;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
@@ -239,7 +255,8 @@ module control (
                   ASel_o            = 1; //PC
                   BSel_o            = 1; //Imm
                   ALUSel_o          = `ALUadd;
-                  MemRW_o           = 0;//Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
@@ -251,7 +268,8 @@ module control (
                   ASel_o            = 1; //PC
                   BSel_o            = 1; //Imm
                   ALUSel_o          = `ALUadd;
-                  MemRW_o           = 0; //Read
+                  MemR_o            = 0;
+                  MemW_o            = 0;
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
@@ -264,7 +282,8 @@ module control (
               ASel_o                = 0; //Reg
               BSel_o                = 1; //Imm
               ALUSel_o              = `ALUadd;
-              MemRW_o               = 0; //Read
+              MemR_o                = 0;
+              MemW_o                = 0;
               RegWEn_o              = 1;
               WBSel_o               = 2'b10; // PC+4
           end
@@ -275,7 +294,8 @@ module control (
               ASel_o                = 1; //PC
               BSel_o                = 1; //Imm
               ALUSel_o              = `ALUadd;
-              MemRW_o               = 0; //Read
+              MemR_o                = 0;
+              MemW_o                = 0;
               RegWEn_o              = 1;
               WBSel_o               = 2'b10; // PC+4
           end
@@ -287,7 +307,8 @@ module control (
               ASel_o                = 1; //PC
               BSel_o                = 1; //Imm
               ALUSel_o              = `ALUadd;
-              MemRW_o               = 0; //Read
+              MemR_o                = 0;
+              MemW_o                = 0;
               RegWEn_o              = 1;
               WBSel_o               = 2'b01; // ALU
           end
@@ -300,7 +321,8 @@ module control (
               ASel_o                = 0; //PC
               BSel_o                = 1; //Imm
               ALUSel_o              = `ALUnop;
-              MemRW_o               = 0; //Read
+              MemR_o                = 0;
+              MemW_o                = 0;
               RegWEn_o              = 0;
               WBSel_o               = 2'b01; // ALU
         end

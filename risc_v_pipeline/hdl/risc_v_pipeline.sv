@@ -25,7 +25,8 @@ module risc_v_pipeline (
   wire        br_un          ;           
   wire        ASel           ;           
   wire        BSel           ;           
-  wire        MemRW          ;          
+  wire        MemR           ;
+  wire        MemW           ;          
   wire        RegWEn         ;         
   wire [1:0]  WBSel          ;          
   wire [3:0]  ALUSel         ;         
@@ -41,7 +42,8 @@ module risc_v_pipeline (
   wire [4:0]   IF_ID_rs2    ;
   wire         IF_ID_ASel   ;   
   wire         IF_ID_BSel   ;   
-  wire         IF_ID_MemRW  ;  
+  wire         IF_ID_MemR   ;  
+  wire         IF_ID_MemW   ;  
   wire         IF_ID_RegWEn ; 
   wire [1:0]   IF_ID_WBSel  ;  
   wire [3:0]   IF_ID_ALUSel ; 
@@ -55,7 +57,8 @@ module risc_v_pipeline (
   wire [31:0] ID_EX_data2  ;
   wire        ID_EX_ASel   ;
   wire        ID_EX_BSel   ;
-  wire        ID_EX_MemRW  ;
+  wire        ID_EX_MemR   ;
+  wire        ID_EX_MemW   ;
   wire        ID_EX_RegWEn ;
   wire [1:0]  ID_EX_WBSel  ;
   wire [3:0]  ID_EX_ALUSel ;
@@ -67,7 +70,8 @@ module risc_v_pipeline (
   wire [31:0] EX_MEM_ALU_result;    
   wire [31:0] EX_MEM_data2     ;  
   wire [4:0]  EX_MEM_rd        ; 
-  wire        EX_MEM_MemRW     ;  
+  wire        EX_MEM_MemR      ;  
+  wire        EX_MEM_MemW      ;  
   wire        EX_MEM_RegWEn    ; 
   wire [1:0]  EX_MEM_WBSel     ; 
 
@@ -98,7 +102,8 @@ module risc_v_pipeline (
     .BrUn_o            (br_un          ),
     .ASel_o            (ASel           ),
     .BSel_o            (BSel           ),
-    .MemRW_o           (MemRW          ),
+    .MemR_o            (MemR           ),
+    .MemW_o            (MemW           ),
     .RegWEn_o          (RegWEn         ),
     .WBSel_o           (WBSel          ),
     .ALUSel_o          (ALUSel         ),
@@ -211,14 +216,16 @@ module risc_v_pipeline (
     .RegDst_i (IF_ID_rd     ), 
     .ASel_i   (ASel         ), 
     .BSel_i   (BSel         ), 
-    .MemRW_i  (MemRW        ), 
+    .MemR_i   (MemR         ),
+    .MemW_i   (MemW         ),  
     .RegWEn_i (RegWEn       ), 
     .WBSel_i  (WBSel        ), 
     .ALUSel_i (ALUSel       ), 
     .RegDst_o (IF_ID_rd_next), 
     .ASel_o   (IF_ID_ASel   ), 
     .BSel_o   (IF_ID_BSel   ), 
-    .MemRW_o  (IF_ID_MemRW  ), 
+    .MemR_o   (IF_ID_MemR   ),
+    .MemW_o   (IF_ID_MemW   ),  
     .RegWEn_o (IF_ID_RegWEn ), 
     .WBSel_o  (IF_ID_WBSel  ), 
     .ALUSel_o (IF_ID_ALUSel ) 
@@ -228,7 +235,7 @@ module risc_v_pipeline (
     .IF_IDrs1_i      (IF_ID_rs1   ),
     .IF_IDrs2_i      (IF_ID_rs2   ),
     .ID_EXrd_i       (ID_EX_rd    ),
-    .ID_EX_MemRead_i (~IF_ID_MemRW),
+    .ID_EX_MemRead_i (ID_EX_MemR  ),
     .hazard_o        (hazard      )
   );
 
@@ -245,7 +252,8 @@ module risc_v_pipeline (
     .data2_i  (data2       ), 
     .ASel_i   (IF_ID_ASel  ), 
     .BSel_i   (IF_ID_BSel  ), 
-    .MemRW_i  (IF_ID_MemRW ), 
+    .MemR_i   (IF_ID_MemR  ),
+    .MemW_i   (IF_ID_MemW  ),  
     .RegWEn_i (IF_ID_RegWEn), 
     .WBSel_i  (IF_ID_WBSel ), 
     .ALUSel_i (IF_ID_ALUSel), 
@@ -258,7 +266,8 @@ module risc_v_pipeline (
     .data2_o  (ID_EX_data2 ), 
     .ASel_o   (ID_EX_ASel  ), 
     .BSel_o   (ID_EX_BSel  ), 
-    .MemRW_o  (ID_EX_MemRW ), 
+    .MemR_o   (ID_EX_MemR  ),
+    .MemW_o   (ID_EX_MemW  ),  
     .RegWEn_o (ID_EX_RegWEn), 
     .WBSel_o  (ID_EX_WBSel ), 
     .ALUSel_o (ID_EX_ALUSel)
@@ -278,19 +287,19 @@ module risc_v_pipeline (
   );
 
   mux31 forward_a_mux_ins(
-    .select_i (forward_a     ),
-    .data1_i  (ID_EX_data1   ),
-    .data2_i  (MEM_WB_data_wb),
-    .data3_i  (EX_MEM_data2  ),
-    .data_o   (forward_a_data)
+    .select_i (forward_a        ),
+    .data1_i  (ID_EX_data1      ),
+    .data2_i  (MEM_WB_data_wb   ),
+    .data3_i  (EX_MEM_ALU_result),
+    .data_o   (forward_a_data   )
   ); 
 
   mux31 forward_b_mux_ins(
-    .select_i (forward_b     ),
-    .data1_i  (ID_EX_data2   ),
-    .data2_i  (MEM_WB_data_wb),
-    .data3_i  (EX_MEM_data2  ),
-    .data_o   (forward_b_data)
+    .select_i (forward_b        ),
+    .data1_i  (ID_EX_data2      ),
+    .data2_i  (MEM_WB_data_wb   ),
+    .data3_i  (EX_MEM_ALU_result),
+    .data_o   (forward_b_data   )
   ); 
 
   mux21 bsel_mux_ins(
@@ -317,7 +326,8 @@ module risc_v_pipeline (
     .ALU_i    (alu_result       ),
     .data2_i  (ID_EX_data2      ),
     .RegDst_i (ID_EX_rd         ),
-    .MemRW_i  (ID_EX_MemRW      ),
+    .MemR_i   (ID_EX_MemR       ),
+    .MemW_i   (ID_EX_MemW       ),
     .RegWEn_i (ID_EX_RegWEn     ),
     .WBSel_i  (ID_EX_WBSel      ),
 
@@ -325,7 +335,8 @@ module risc_v_pipeline (
     .ALU_o    (EX_MEM_ALU_result),
     .data2_o  (EX_MEM_data2     ),
     .RegDst_o (EX_MEM_rd        ),
-    .MemRW_o  (EX_MEM_MemRW     ),
+    .MemR_o   (EX_MEM_MemR      ),
+    .MemW_o   (EX_MEM_MemW      ),
     .RegWEn_o (EX_MEM_RegWEn    ),
     .WBSel_o  (EX_MEM_WBSel     )
   );
@@ -337,8 +348,8 @@ module risc_v_pipeline (
     .op_addr     (                 ),
     .addr_i      (EX_MEM_ALU_result),
     .data_i      (EX_MEM_data2     ),
-    .mem_write_i (EX_MEM_MemRW     ),
-    .mem_read_i  (~EX_MEM_MemRW    ),
+    .mem_write_i (EX_MEM_MemW      ),
+    .mem_read_i  (EX_MEM_MemR      ),
 
     .data_o      (mem_data_out     ),
     .data_mem_o  (                 )
@@ -352,8 +363,8 @@ module risc_v_pipeline (
 
   mux31 data_wb_mux_ins(
     .select_i (EX_MEM_WBSel     ),
-    .data1_i  (EX_MEM_ALU_result),
-    .data2_i  (mem_data_out     ),
+    .data1_i  (mem_data_out     ),
+    .data2_i  (EX_MEM_ALU_result),
     .data3_i  (EX_MEM_pc_add    ),
     .data_o   (data_wb          )
   ); 

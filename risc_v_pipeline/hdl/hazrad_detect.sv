@@ -6,6 +6,6 @@ module hazrad_detect(
   output       hazard_o       
 );
  
-  assign hazard_o = ((ID_EX_MemRead_i && (ID_EXrd_i == IF_IDrs1_i || ID_EXrd_i == IF_IDrs2_i))? 1'b1 : 1'b0);
+  assign hazard_o = ((ID_EX_MemRead_i && (ID_EXrd_i == IF_IDrs1_i || ID_EXrd_i == IF_IDrs2_i) && (ID_EXrd_i != 'b0)) ? 1'b1 : 1'b0);
 
 endmodule

@@ -1,6 +1,2 @@
-Loop:  addi x10,x22,2
-addi x10,x22,2
-addi x10,x22,2
-addi x10,x22,2
-addi x10,x22,2
-beq x0,x0,Loop
+addi x10,x0,5
+addi  x11,x10,10

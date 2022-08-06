@@ -342,8 +342,8 @@ ll gethex(vector<int>temp)
 void hexa()
 {
 	ofstream file;
-	file.open("MCode.mc",std::ios_base::app);
-	file<<"0x";
+	file.open("../sim/tb/inst_test.txt",std::ios_base::app);
+	// file<<"0x";
 	string s;
 	ll num =1;
 	ll temppc = pccount;
@@ -359,8 +359,8 @@ void hexa()
 	}
 
 	reverse(s.begin(),s.end());
-	file<<s<<" ";
-	file<<"0x";
+	// file<<s<<" ";
+	// file<<"0x";
 	for(int i=0;i<32;i++)
 	{
 		vector<int>t;
@@ -1392,7 +1392,7 @@ int main()
 	read_data(); 
 	
 	ofstream files;
-	files.open("MCode.mc");
+	files.open("../sim/tb/inst_test.txt");
 	files.close();
 	formats();
 	ifstream myFile;
@@ -1418,20 +1418,20 @@ int main()
 	process();
 	myFile.close();
 	ofstream file;
-	file.open("MCode.mc",std::ios_base::app);
-	string s = "-------------------------------------------------------";
-	file<<s<<endl;
+	file.open("../sim/tb/inst_test.txt",std::ios_base::app);
+	// string s = "-------------------------------------------------------";
+	// file<<s<<endl;
 
-	//Print the Data Memory Part in Increasing Address Order
-	for(int i=0;i<400;i++)
-	{
-		file<<datamemory[i]<<" ";
-		if((i+1)%4==0)
-		{
-			file<<endl;
-		}
-	}
-	file<<s<<endl;
+	// //Print the Data Memory Part in Increasing Address Order
+	// for(int i=0;i<400;i++)
+	// {
+	// 	file<<datamemory[i]<<" ";
+	// 	if((i+1)%4==0)
+	// 	{
+	// 		file<<endl;
+	// 	}
+	// }
+	// file<<s<<endl;
 	file.close();
 
 
