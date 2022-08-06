@@ -1,6 +1,6 @@
 module risc_v_pipeline (
 	input clk,    // Clock
-	input rst_n,  // Asynchronous reset active low
+	input rst_n   // Asynchronous reset active low
 );
   
   wire        hazard   ;
@@ -45,19 +45,43 @@ module risc_v_pipeline (
   wire [1:0]   IF_ID_WBSel  ;  
   wire [3:0]   IF_ID_ALUSel ; 
 
-  wire [31:0] ID_EX_pc     ,
-  wire [31:0] ID_EX_imm    ,
-  wire [4:0]  ID_EX_rd     ,
-  wire [4:0]  ID_EX_r1     ,
-  wire [4:0]  ID_EX_r2     ,
-  wire [31:0] ID_EX_data1  ,
-  wire [31:0] ID_EX_data2  ,
-  wire        ID_EX_ASel   ,
-  wire        ID_EX_BSel   ,
-  wire        ID_EX_MemRW  ,
-  wire        ID_EX_RegWEn ,
-  wire [1:0]  ID_EX_WBSel  ,
-  wire [3:0]  ID_EX_ALUSel  
+  wire [31:0] ID_EX_pc     ;
+  wire [31:0] ID_EX_imm    ;
+  wire [4:0]  ID_EX_rd     ;
+  wire [4:0]  ID_EX_r1     ;
+  wire [4:0]  ID_EX_r2     ;
+  wire [31:0] ID_EX_data1  ;
+  wire [31:0] ID_EX_data2  ;
+  wire        ID_EX_ASel   ;
+  wire        ID_EX_BSel   ;
+  wire        ID_EX_MemRW  ;
+  wire        ID_EX_RegWEn ;
+  wire [1:0]  ID_EX_WBSel  ;
+  wire [3:0]  ID_EX_ALUSel ;
+
+  wire [31:0] alu_result       ;
+  wire [31:0] data_wb          ;
+  wire [31:0] EX_MEM_pc        ;   
+  wire [31:0] EX_MEM_pc_add    ;
+  wire [31:0] EX_MEM_ALU_result;    
+  wire [31:0] EX_MEM_data2     ;  
+  wire [4:0]  EX_MEM_rd        ; 
+  wire        EX_MEM_MemRW     ;  
+  wire        EX_MEM_RegWEn    ; 
+  wire [1:0]  EX_MEM_WBSel     ; 
+
+
+  wire [1:0]  forward_a        ;       
+  wire [1:0]  forward_b        ; 
+  wire [31:0] forward_a_data   ;        
+  wire [31:0] forward_b_data   ;
+  wire [31:0] alu_src_2        ;
+
+  wire [31:0] mem_data_out     ;                 
+
+  wire [4:0]  MEM_WB_rd        ;
+  wire        MEM_WB_RegWEn    ;
+  wire [31:0] MEM_WB_data_wb   ;
 
   // control
   control control_ins(
@@ -162,15 +186,15 @@ module risc_v_pipeline (
   );
 
   register register_ins(
-    .clk        (clk       ),
-    .rst_n      (rst_n     ),
-    .RSaddr_i   (IF_ID_rs1 ),
-    .RTaddr_i   (IF_ID_rs2 ),
-    .RDaddr_i   (  ),                                        adsasdsa
-    .RDdata_i   (  ),
-    .RegWrite_i (  ),                                      // dadaskldjhlaskfas;ofdjas;dkjsa;dks
-    .RSdata_o   (data1     ),
-    .RTdata_o   (data2     )
+    .clk        (clk           ),
+    .rst_n      (rst_n         ),
+    .RSaddr_i   (IF_ID_rs1     ),
+    .RTaddr_i   (IF_ID_rs2     ),
+    .RDaddr_i   (MEM_WB_rd     ),
+    .RDdata_i   (MEM_WB_data_wb),
+    .RegWrite_i (MEM_WB_RegWEn ),
+    .RSdata_o   (data1         ),
+    .RTdata_o   (data2         )
   );
 
   branch_comparator branch_comparator_ins(
@@ -239,6 +263,111 @@ module risc_v_pipeline (
     .ALUSel_o (ID_EX_ALUSel), 
   );
 
+  //EX
+  forwarding_unit forwarding_unit_ins(
+    .EX_MEM_RegWrite_i (EX_MEM_RegWEn),
+    .EX_MEM_RD_i       (EX_MEM_rd    ),
+    .ID_EX_RS_i        (ID_EX_rs1    ),
+    .ID_EX_RT_i        (ID_EX_rs2    ),
+    .MEM_WB_RegWrite_i (MEM_WB_RegWEn),
+    .MEM_WB_RD_i       (MEM_WB_rd    ),
 
+    .ForwardA_o        (forward_a    ),
+    .ForwardB_o        (forward_b    )
+  );
+
+  mux31 forward_a_mux_ins(
+    .select_i (forward_a     ),
+    .data1_i  (ID_EX_data1   ),
+    .data2_i  (MEM_WB_data_wb),
+    .data3_i  (EX_MEM_data2  ),
+    .data_o   (forward_a_data)
+  ); 
+
+  mux31 forward_b_mux_ins(
+    .select_i (forward_b     ),
+    .data1_i  (ID_EX_data2   ),
+    .data2_i  (MEM_WB_data_wb),
+    .data3_i  (EX_MEM_data2  ),
+    .data_o   (forward_b_data)
+  ); 
+
+  mux21 bsel_mux_ins(
+    .select_i (ID_EX_BSel     ),
+    .data1_i  (forward_b_data ),
+    .data2_i  (ID_EX_imm      ),
+    .data_o   (alu_src_2      )
+  );
+
+  ALU ALU_ins(
+    .src1      (forward_a_data),
+    .src2      (alu_src_2     ),
+    .ALU_sel   (ALU_sel       ),
+    .alu_result(alu_result    ),
+    .zero_flag (              ),
+  );
+
+  //EX/MEM
+
+  EX_MEM EX_MEM_ins(
+    .clk      (clk              ),
+    .rst_n    (rst_n            ),
+    .pc_i     (ID_EX_pc         ),
+    .ALU_i    (alu_result       ),
+    .data2_i  (ID_EX_data2      ),
+    .RegDst_i (ID_EX_rd         ),
+    .MemRW_i  (ID_EX_MemRW      ),
+    .RegWEn_i (ID_EX_RegWEn     ),
+    .WBSel_i  (ID_EX_WBSel      ),
+
+    .pc_o     (EX_MEM_pc        ),
+    .ALU_o    (EX_MEM_ALU_result),
+    .data2_o  (EX_MEM_data2     ),
+    .RegDst_o (EX_MEM_rd        ),
+    .MemRW_o  (EX_MEM_MemRW     ),
+    .RegWEn_o (EX_MEM_RegWEn    ),
+    .WBSel_o  (EX_MEM_WBSel     )
+  );
+
+  // EX
+  data_memory data_memory_ins(
+    .clk         (clk              ),
+    .rst_n       (rst_n            ),
+    .op_addr     (                 ),
+    .addr_i      (EX_MEM_ALU_result),
+    .data_i      (EX_MEM_data2     ),
+    .mem_write_i (EX_MEM_MemRW     ),
+    .mem_read_i  (~EX_MEM_MemRW    ),
+
+    .data_o      (mem_data_out     ),
+    .data_mem_o  (                 )
+  );
+
+  adder EX_MEM_pc_adder_ins (
+    .data1_i  (EX_MEM_pc    ),
+    .data2_i  ('d4          ),
+    .result_o (EX_MEM_pc_add)
+  );
+
+  mux31 data_wb_mux_ins(
+    .select_i (EX_MEM_WBSel     ),
+    .data1_i  (EX_MEM_ALU_result),
+    .data2_i  (mem_data_out     ),
+    .data3_i  (EX_MEM_pc_add    ),
+    .data_o   (data_wb          )
+  ); 
+
+  // EX_MEM
+  EX_MEM EX_MEM_ins(
+    .clk       (clk           ),
+    .rst_n     (rst_n         ),
+    .RegDst_i  (EX_MEM_rd     ),
+    .RegWEn_i  (EX_MEM_RegWEn ),
+    .data_wb_i (data_wb       ),
+
+    .RegDst_o  (MEM_WB_rd     ),
+    .RegWEn_o  (MEM_WB_RegWEn ),
+    .data_wb_o (MEM_WB_data_wb)
+  );
 
 endmodule : risc_v_pipeline
