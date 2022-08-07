@@ -1,6 +1,7 @@
-addi x10,x0,5
-addi x12,x0,0
-addi  x11,x10,10
-sw    x11, 0(x12)
-lw    x13, 0(x12)
-add   x14, x13, x10
+addi x12,x0,30
+addi x10,x0,30
+sw x10, 0(x0)
+lw x17, 0(x0)
+jal x0,label
+addi x14,x0,50
+label:add x13,x12,x10

@@ -76,11 +76,15 @@ module risc_v_pipeline (
   wire [1:0]  EX_MEM_WBSel         ; 
 
 
-  wire [1:0]  forward_a        ;       
-  wire [1:0]  forward_b        ; 
-  wire [31:0] forward_a_data   ;        
-  wire [31:0] forward_b_data   ;
-  wire [31:0] alu_src_2        ;
+  wire [1:0]  forward_a          ;       
+  wire [1:0]  forward_b          ;
+  wire [1:0]  forward_comp1      ;
+  wire [1:0]  forward_comp2      ;   
+  wire [31:0] forward_a_data     ;        
+  wire [31:0] forward_b_data     ;
+  wire [31:0] forward_comp1_mux_o;
+  wire [31:0] forward_comp2_mux_o;
+  wire [31:0] alu_src_2          ;
 
   wire [31:0] mem_data_out     ;                 
 
@@ -203,12 +207,28 @@ module risc_v_pipeline (
     .RTdata_o   (data2         )
   );
 
+  mux31 forward_comp1_mux(
+    .select_i (forward_comp1      ),
+    .data1_i  (data1              ),
+    .data2_i  (alu_result         ),
+    .data3_i  (mem_data_out       ),
+    .data_o   (forward_comp1_mux_o)
+  );
+
+  mux31 forward_comp2_mux(
+    .select_i (forward_comp2      ),
+    .data1_i  (data2              ),
+    .data2_i  (alu_result         ),
+    .data3_i  (mem_data_out       ),
+    .data_o   (forward_comp2_mux_o)
+  );
+
   branch_comparator branch_comparator_ins(
-    .BrUn_i (br_un),
-    .DataA  (data1 ),
-    .DataB  (data2),
-    .BrEq_o (br_eq),
-    .BrLt_o (br_lt)
+    .BrUn_i (br_un              ),
+    .DataA  (forward_comp1_mux_o),
+    .DataB  (forward_comp2_mux_o),
+    .BrEq_o (br_eq              ),
+    .BrLt_o (br_lt              )
   );
 
   control_mux control_mux_ins(
@@ -238,7 +258,6 @@ module risc_v_pipeline (
     .ID_EX_MemRead_i (ID_EX_MemR  ),
     .hazard_o        (hazard      )
   );
-
 
   ID_EX ID_EX_ins(
     .clk      (clk         ), 
@@ -276,14 +295,20 @@ module risc_v_pipeline (
   //EX
   forwarding_unit forwarding_unit_ins(
     .EX_MEM_RegWrite_i (EX_MEM_RegWEn),
+    .ID_EX_RegWrite_i  (ID_EX_RegWEn ),
+    .MEM_WB_RegWrite_i (MEM_WB_RegWEn),
+    .EX_MEM_MemR_i     (EX_MEM_MemR  ),
     .EX_MEM_RD_i       (EX_MEM_rd    ),
+    .IF_ID_RS_i        (IF_ID_rs1    ),
+    .IF_ID_RT_i        (IF_ID_rs2    ),
     .ID_EX_RS_i        (ID_EX_rs1    ),
     .ID_EX_RT_i        (ID_EX_rs2    ),
-    .MEM_WB_RegWrite_i (MEM_WB_RegWEn),
+    .ID_EX_RD_i        (ID_EX_rd     ),
     .MEM_WB_RD_i       (MEM_WB_rd    ),
-
     .ForwardA_o        (forward_a    ),
-    .ForwardB_o        (forward_b    )
+    .ForwardB_o        (forward_b    ),
+    .forward_comp1_o   (forward_comp1),
+    .forward_comp2_o   (forward_comp2)
   );
 
   mux31 forward_a_mux_ins(

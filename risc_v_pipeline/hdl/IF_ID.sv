@@ -14,13 +14,13 @@ module IF_ID(
         pc_o <= 32'b0;
         inst_o <= 32'b0;
       end else 
+      if(hazard_i) begin 
+        pc_o <= pc_o;
+        inst_o <= inst_o;
+      end else 
       if(flush_i) begin
         pc_o <= pc_i;
         inst_o <= 32'b0;
-      end else 
-      if(hazard_i) begin
-        pc_o <= pc_i;
-        inst_o <= inst_o;
       end else begin
         pc_o <= pc_i;
         inst_o <= inst_i;

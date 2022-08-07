@@ -289,7 +289,7 @@ module control (
           end
       `J:
           begin
-              PCSel_o            = 1; //jump_pc
+              PCSel_o               = 0; //jump_pc
               ImmSel_o              = `ImmSelJ; //Immediate type J
               ASel_o                = 1; //PC
               BSel_o                = 1; //Imm
