@@ -30,18 +30,20 @@ module data_memory (
         memory[addr_i    ] <= data_i[7:0];
       end
   end
-
+  
+`ifdef DATA_MEMORY_LOG
 always_comb begin
     $display("\n@ %1d ns => DATA MEMORY", $realtime());
   for(int i = 0; i < 30; i++) begin
     if(memory[i] !== 'hx)begin 
         $display("  [%3d] = 'h%2h, [%3d] = 'h%2h, [%3d] = 'h%2h, [%3d] = 'h%2h => data = %1d",
          i*4 + 3, memory[i*4 + 3], i*4 + 2, memory[i*4 + 2], i*4 + 1, memory[i*4 + 1], i*4, memory[i*4],
-          {memory[i*4 + 3], memory[i*4 + 2], memory[i*4 + 1], memory[i*4]});
+          $signed({memory[i*4 + 3], memory[i*4 + 2], memory[i*4 + 1], memory[i*4]}));
     end else begin 
         break;   
     end 
   end
 end
+`endif
 
 endmodule

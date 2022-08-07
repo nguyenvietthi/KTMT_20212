@@ -40,16 +40,17 @@ always@(negedge clk or posedge rst_n)begin
         end
     end      
 end
-   
+`ifdef REGISTER_LOG
 always_comb begin
     $display("\n@ %1d ns => REGISTER", $realtime());
   for(int i = 0; i < 32; i++) begin
     if(register[i] !== 'bx)begin 
-        $display("  [%2d]: %1d", i, register[i]);
+        $display("  [%2d]: %1d", i, $signed(register[i]));
     end else begin 
         break;   
     end 
   end
 end
+`endif
 
 endmodule 

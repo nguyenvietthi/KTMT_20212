@@ -17,7 +17,7 @@ module risc_v_pipeline_tb ();
     @(negedge clk);
     rst_n = 1;
 
-    repeat(50) @(negedge clk);
+    repeat(1000) @(negedge clk);
     $stop;
   end
 endmodule
