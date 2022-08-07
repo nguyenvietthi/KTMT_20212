@@ -35,7 +35,7 @@ always@(negedge clk or posedge rst_n)begin
         for(int i = 0; i < 32; i = i + 1) register[i] <= 0;
     end else 
     begin
-        if(RegWrite_i != 'b0) begin
+        if(RegWrite_i && RDaddr_i != 'b0) begin
             register[RDaddr_i] <= RDdata_i;
         end
     end      

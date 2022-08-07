@@ -16,7 +16,8 @@ module risc_v_pipeline (
   reg  [31:0] delay_pc_jump_result;
 
   wire        br_eq          ;           
-  wire        br_lt          ;           
+  wire        br_lt          ; 
+  wire        br_ge          ;          
   wire [6:0]  opcode         ;         
   wire [6:0]  funct7         ;         
   wire [2:0]  funct3         ;         
@@ -98,6 +99,7 @@ module risc_v_pipeline (
     .rst_n             (rst_n          ),
     .BrEq_i            (br_eq          ),
     .BrLT_i            (br_lt          ),
+    .BrGe_i            (br_ge          ),
     .opcode_i          (opcode         ),
     .funct7_i          (funct7         ),
     .funct3_i          (funct3         ),
@@ -228,7 +230,8 @@ module risc_v_pipeline (
     .DataA  (forward_comp1_mux_o),
     .DataB  (forward_comp2_mux_o),
     .BrEq_o (br_eq              ),
-    .BrLt_o (br_lt              )
+    .BrLt_o (br_lt              ),
+    .BrGe_o (br_ge              )
   );
 
   control_mux control_mux_ins(

@@ -4,6 +4,7 @@ module control (
     input            rst_n            ,
     input            BrEq_i           ,
     input            BrLT_i           ,
+    input            BrGe_i           ,
     input      [6:0] opcode_i         ,
     input      [6:0] funct7_i         ,
     input      [2:0] funct3_i         ,
@@ -182,16 +183,68 @@ module control (
           endcase
       `IMM_I:
         begin
-            PCSel_o               = 0; //PC=PC+4
-            ImmSel_o              = `ImmSelI; //Immediate type I
-            // BrUn                = 1'bx;
-            ASel_o                = 0; //Reg
-            BSel_o                = 1; //Imm
-            ALUSel_o              = `ALUadd;
-            MemR_o            = 0;
-            MemW_o            = 0;
-            RegWEn_o              = 1;
-            WBSel_o               = 2'b01; //ALU
+          case (funct3_i)
+            'h0: begin  //addi
+              PCSel_o               = 0; //PC=PC+4
+              ImmSel_o              = `ImmSelI; //Immediate type I
+              // BrUn                = 1'bx;
+              ASel_o                = 0; //Reg
+              BSel_o                = 1; //Imm
+              ALUSel_o              = `ALUadd;
+              MemR_o                = 0;
+              MemW_o                = 0;
+              RegWEn_o              = 1;
+              WBSel_o               = 2'b01; //ALU
+            end
+            'h4: begin //xori
+              PCSel_o               = 0; //PC=PC+4
+              ImmSel_o              = `ImmSelI; //Immediate type I
+              // BrUn                = 1'bx;
+              ASel_o                = 0; //Reg
+              BSel_o                = 1; //Imm
+              ALUSel_o              = `ALUxor;
+              MemR_o                = 0;
+              MemW_o                = 0;
+              RegWEn_o              = 1;
+              WBSel_o               = 2'b01; //ALU
+            end
+            'h6: begin //ori 
+              PCSel_o               = 0; //PC=PC+4
+              ImmSel_o              = `ImmSelI; //Immediate type I
+              // BrUn                = 1'bx;
+              ASel_o                = 0; //Reg
+              BSel_o                = 1; //Imm
+              ALUSel_o              = `ALUor;
+              MemR_o                = 0;
+              MemW_o                = 0;
+              RegWEn_o              = 1;
+              WBSel_o               = 2'b01; //ALU
+            end
+            'h7: begin //andi
+              PCSel_o               = 0; //PC=PC+4
+              ImmSel_o              = `ImmSelI; //Immediate type I
+              // BrUn                = 1'bx;
+              ASel_o                = 0; //Reg
+              BSel_o                = 1; //Imm
+              ALUSel_o              = `ALUand;
+              MemR_o                = 0;
+              MemW_o                = 0;
+              RegWEn_o              = 1;
+              WBSel_o               = 2'b01; //ALU
+            end
+            'h1: begin //slli
+              PCSel_o               = 0; //PC=PC+4
+              ImmSel_o              = `ImmSelI; //Immediate type I
+              // BrUn                = 1'bx;
+              ASel_o                = 0; //Reg
+              BSel_o                = 1; //Imm
+              ALUSel_o              = `ALUsll;
+              MemR_o                = 0;
+              MemW_o                = 0;
+              RegWEn_o              = 1;
+              WBSel_o               = 2'b01; //ALU
+            end
+          endcase
         end
       `LOAD_I:
           begin
@@ -260,9 +313,35 @@ module control (
                   RegWEn_o          = 0;
                   WBSel_o           = 2'bxx;
               end
+          3'b101: //bge 
+              begin
+                  PCSel_o           = (BrGe_i) ? 1 : 0; //PC+4 // temporary value
+                  ImmSel_o          = `ImmSelB; //Immediate type `B
+                  BrUn_o            = 0;
+                  ASel_o            = 1; //PC
+                  BSel_o            = 1; //Imm
+                  ALUSel_o          = `ALUadd;
+                  MemR_o            = 0;
+                  MemW_o            = 0;
+                  RegWEn_o          = 0;
+                  WBSel_o           = 2'bxx;
+              end
           3'b101: //bltu //Branchcomp read BrLT_i and change PCSel_o
               begin
                   PCSel_o           = (BrLT_i) ? 1 : 0; //PC+4 // temporary value
+                  ImmSel_o          = `ImmSelB; //Immediate type `B
+                  BrUn_o            = 1;
+                  ASel_o            = 1; //PC
+                  BSel_o            = 1; //Imm
+                  ALUSel_o          = `ALUadd;
+                  MemR_o            = 0;
+                  MemW_o            = 0;
+                  RegWEn_o          = 0;
+                  WBSel_o           = 2'bxx;
+              end
+          3'b111: //bgeu 
+              begin
+                  PCSel_o           = (BrGe_i) ? 1 : 0; //PC+4 // temporary value
                   ImmSel_o          = `ImmSelB; //Immediate type `B
                   BrUn_o            = 1;
                   ASel_o            = 1; //PC
