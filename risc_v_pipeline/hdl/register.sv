@@ -40,6 +40,7 @@ always@(negedge clk or posedge rst_n)begin
         end
     end      
 end
+
 `ifdef REGISTER_LOG
 always_comb begin
     $display("\n@ %1d ns => REGISTER", $realtime());
