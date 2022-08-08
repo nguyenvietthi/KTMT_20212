@@ -18,9 +18,16 @@ alias vlg='vlgr; vlgt'
 alias vsm='vsim -c ${TOP_TB} -wlf vsim.wlf -solvefaildebug -assertdebug -voptargs=+acc -l vsim.log -do "add wave -r /${TOP_TB}/*; run -all; quit"'
 
 # view wave form
-#alias viw='vsim -view vsim.wlf -do wave.do &'
+alias viw='vsim -view vsim.wlf -do wave.do &'
 
 #gen report
 alias rep='vcover report -stmtaltflow -html -htmldir report/ coverage.ucdb'
 
+#g++ compile
+g++ ../../assembly-to-machine-code-risc_v/A-to-M.cpp -o ../../assembly-to-machine-code-risc_v/A-to-M
+cd ../../assembly-to-machine-code-risc_v/
+./A-to-M
+cd -
+
+#simulation
 vlb;vlg;vsm
