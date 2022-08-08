@@ -161,7 +161,7 @@ void read_data()
     ifstream file;
     string word;
     vector<datafile> stored;
-    file.open("test.asm");
+    file.open("asm_code.asm");
     int flag;
     int start = 0;
     if(file.is_open())
@@ -342,7 +342,7 @@ ll gethex(vector<int>temp)
 void hexa()
 {
 	ofstream file;
-	file.open("../sim/tb/inst_mem_data.txt",std::ios_base::app);
+	file.open("../sim/tb/inst_memory.txt",std::ios_base::app);
 	// file<<"0x";
 	string s;
 	ll num =1;
@@ -1387,16 +1387,17 @@ void setlabel()
 //Driver Code
 int main()
 {
+	cout << "Converting assembly to machine code RISC V\n";
 	for(int i=0;i<4000;i++)
 		datamemory[i] = "00";
 	read_data(); 
 	
 	ofstream files;
-	files.open("../sim/tb/inst_mem_data.txt");
+	files.open("../sim/tb/inst_memory.txt");
 	files.close();
 	formats();
 	ifstream myFile;
-	myFile.open("test.asm");
+	myFile.open("asm_code.asm");
 	string line;
 	int flag = 0;
 	int start = 0;
@@ -1418,7 +1419,7 @@ int main()
 	process();
 	myFile.close();
 	ofstream file;
-	file.open("../sim/tb/inst_mem_data.txt",std::ios_base::app);
+	file.open("../sim/tb/inst_memory.txt",std::ios_base::app);
 	// string s = "-------------------------------------------------------";
 	// file<<s<<endl;
 
@@ -1433,6 +1434,7 @@ int main()
 	// }
 	// file<<s<<endl;
 	file.close();
+	cout <<"Converted\n";
 
 
 }
