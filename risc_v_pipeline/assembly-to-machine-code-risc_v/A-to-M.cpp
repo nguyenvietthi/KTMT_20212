@@ -342,7 +342,7 @@ ll gethex(vector<int>temp)
 void hexa()
 {
 	ofstream file;
-	file.open("../sim/tb/inst_test.txt",std::ios_base::app);
+	file.open("../sim/tb/inst_mem_data.txt",std::ios_base::app);
 	// file<<"0x";
 	string s;
 	ll num =1;
@@ -1392,7 +1392,7 @@ int main()
 	read_data(); 
 	
 	ofstream files;
-	files.open("../sim/tb/inst_test.txt");
+	files.open("../sim/tb/inst_mem_data.txt");
 	files.close();
 	formats();
 	ifstream myFile;
@@ -1418,7 +1418,7 @@ int main()
 	process();
 	myFile.close();
 	ofstream file;
-	file.open("../sim/tb/inst_test.txt",std::ios_base::app);
+	file.open("../sim/tb/inst_mem_data.txt",std::ios_base::app);
 	// string s = "-------------------------------------------------------";
 	// file<<s<<endl;
 

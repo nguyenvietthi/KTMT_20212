@@ -6,7 +6,7 @@ module instruction_memory(
 );
   reg [31:0] inst_memory [50:0];
   initial begin
-      $readmemh("D:/OneDrive - Hanoi University of Science and Technology/NAM 4/20212/KTMT/KTMT_20212/risc_v_pipeline/sim/tb/inst_test.txt", inst_memory);
+      $readmemh("D:/OneDrive - Hanoi University of Science and Technology/NAM 4/20212/KTMT/KTMT_20212/risc_v_pipeline/sim/tb/inst_mem_data.txt", inst_memory);
       
       $display("\nInstruction Memory: ");
       for(int i = 0; i < 50; i++) begin 
