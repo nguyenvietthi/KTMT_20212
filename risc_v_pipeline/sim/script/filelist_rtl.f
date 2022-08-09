@@ -16,7 +16,7 @@
 -timescale "1ns/1ps"
 -incr
 
-+define+REGISTER_LOG
+#+define+REGISTER_LOG
 +define+DATA_MEMORY_LOG
 
 ////////////////////////////////////////////////////////////////////////////////
